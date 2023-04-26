@@ -101,6 +101,16 @@ fi;
 chmod -R 755 /data/droidian/tools
 bb=/data/droidian/tools/busybox;
 
+tmpdir=/data/droidian/data
+target_partition="BOOT"
+partition=$(find /dev/block/platform -name ${target_partition} | head -n 1)
+if [ -n "${partition}" ]; then
+	info "Found boot partition for current slot ${partition}"
+	dd if=${tmpdir}/boot.img of=${partition} || error "Unable to flash kernel"
+	info "Kernel flashed"
+	rm ${tmpdir}/boot.img
+fi
+
 # run setup.sh on busybox's ash
 $bb ash /data/droidian/setup.sh $2;
 if [ $? != "0" ]; then
